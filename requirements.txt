@@ -1,0 +1,9 @@
+psycopg[binary]
+confluent-kafka
+faker
+python-dotenv
+sqlalchemy
+pandas
+clickhouse-connect
+pytest
+dbt-postgres

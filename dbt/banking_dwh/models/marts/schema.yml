@@ -1,0 +1,164 @@
+version: 2
+
+
+models:
+
+  - name: dim_customer
+
+    description:
+      Customer dimension.
+
+    columns:
+
+      - name: customer_key
+
+        description:
+          Customer primary key.
+
+        data_tests:
+          - not_null
+          - unique
+
+
+      - name: country
+
+        data_tests:
+          - not_null
+
+
+  - name: dim_account
+
+    description:
+      Bank account dimension.
+
+    columns:
+
+      - name: account_key
+
+        data_tests:
+          - not_null
+          - unique
+
+
+      - name: customer_key
+
+        data_tests:
+          - not_null
+
+          - relationships:
+
+              arguments:
+
+                to:
+                  ref('dim_customer')
+
+                field:
+                  customer_key
+
+
+      - name: currency
+
+        data_tests:
+
+          - accepted_values:
+
+              arguments:
+
+                values:
+                  - KZT
+                  - USD
+                  - EUR
+
+
+  - name: fact_transactions
+
+    description:
+      Transaction fact table.
+
+    columns:
+
+      - name: transaction_id
+
+        description:
+          Unique transaction identifier.
+
+        data_tests:
+          - not_null
+          - unique
+
+
+      - name: account_key
+
+        data_tests:
+
+          - not_null
+
+          - relationships:
+
+              arguments:
+
+                to:
+                  ref('dim_account')
+
+                field:
+                  account_key
+
+
+      - name: customer_key
+
+        data_tests:
+
+          - not_null
+
+          - relationships:
+
+              arguments:
+
+                to:
+                  ref('dim_customer')
+
+                field:
+                  customer_key
+
+
+      - name: amount
+
+        data_tests:
+          - not_null
+
+
+      - name: currency
+
+        data_tests:
+
+          - not_null
+
+          - accepted_values:
+
+              arguments:
+
+                values:
+                  - KZT
+                  - USD
+                  - EUR
+
+
+      - name: status
+
+        data_tests:
+
+          - not_null
+
+          - accepted_values:
+
+              arguments:
+
+                values:
+                  - COMPLETED
+                  - DECLINED
+
+
+      - name: transaction_timestamp
+
+        data_tests:
+          - not_null
