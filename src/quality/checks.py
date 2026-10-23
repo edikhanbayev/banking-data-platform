@@ -1,38 +1,21 @@
 import psycopg
-
 from src.config import DWH_DB
 
-
-def execute_check(
-    query: str,
-    check_name: str,
-):
-
-    with psycopg.connect(
-        **DWH_DB
-    ) as connection:
-
+def execute_check(query: str,check_name: str,):
+    with psycopg.connect(**DWH_DB) as connection:
         with connection.cursor() as cursor:
-
             cursor.execute(query)
-
             result = cursor.fetchone()[0]
 
-
     if result != 0:
-
         raise ValueError(
             f"{check_name} failed. "
             f"Invalid rows: {result}"
         )
 
-
-    print(
-        f"{check_name}: PASSED"
-    )
+    print(f"{check_name}: PASSED"   )
 
 def check_freshness():
-
     query = """
         SELECT
             EXTRACT(
@@ -45,32 +28,21 @@ def check_freshness():
         FROM raw.transactions
     """
 
-
-    with psycopg.connect(
-        **DWH_DB
-    ) as connection:
-
+    with psycopg.connect(**DWH_DB) as connection:
         with connection.cursor() as cursor:
-
             cursor.execute(query)
-
             hours_old = cursor.fetchone()[0]
 
-
     if hours_old is None:
-
         raise ValueError(
             "No transactions found."
         )
 
-
     if hours_old > 48:
-
         raise ValueError(
             f"Data too old: "
             f"{hours_old:.2f} hours"
         )
-
 
     print(
         f"Freshness PASSED: "
@@ -88,7 +60,6 @@ def main():
         "null_transaction_id"
     )
 
-
     execute_check(
         """
         SELECT COUNT(*)
@@ -102,7 +73,6 @@ def main():
         "duplicate_transactions"
     )
 
-
     execute_check(
         """
         SELECT COUNT(*)
@@ -111,7 +81,6 @@ def main():
         """,
         "invalid_amount"
     )
-
 
     execute_check(
         """
